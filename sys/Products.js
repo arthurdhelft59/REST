@@ -2,7 +2,7 @@ import express from "express";
 
 const app= express();
 const port = 3000;
-const produits = [
+const Products = [
   {
     nom: "Ordinateur portable",
     description: "Ordinateur portable 15 pouces avec 16 Go de RAM",
