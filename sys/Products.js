@@ -1,5 +1,6 @@
 import express from "express";
 
+
 const app= express();
 const port = 3000;
 const Products = [
@@ -64,11 +65,161 @@ const Products = [
     categorie: "Accessoires"
   }
 ];
+app.use(express.json());
+
+
+
+// ==============================
+// 1. LISTER LES PRODUITS
+// GET /products
+// ==============================
 
 app.get("/products", (req, res) => {
-  res.send("List of products");
+  res.status(200).json(Products);
 });
 
+
+// ==============================
+// 2. CONSULTER UN PRODUIT
+// GET /products/:id
+// ==============================
+
+app.get("/products/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+
+  if (id < 0 || id >= Products.length) {
+    return res.status(404).json({
+      message: "Produit introuvable"
+    });
+  }
+
+  res.status(200).json(Products[id]);
+});
+
+
+// ==============================
+// 3. AJOUTER UN PRODUIT
+// POST /products
+// ==============================
+
+app.post("/products", (req, res) => {
+  const { nom, description, prix, categorie } = req.body;
+
+  if (!nom || !description || prix === undefined || !categorie) {
+    return res.status(400).json({
+      message: "Tous les champs sont obligatoires"
+    });
+  }
+
+  const nouveauProduit = {
+    nom,
+    description,
+    prix,
+    categorie
+  };
+
+  Products.push(nouveauProduit);
+
+  res.status(201).json(nouveauProduit);
+});
+
+
+// ==============================
+// 4. MODIFIER UN PRODUIT
+// PATCH /products/:id
+// ==============================
+
+app.patch("/products/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+
+  if (id < 0 || id >= Products.length) {
+    return res.status(404).json({
+      message: "Produit introuvable"
+    });
+  }
+
+  const produit = Products[id];
+
+  if (req.body.nom !== undefined) {
+    produit.nom = req.body.nom;
+  }
+
+  if (req.body.description !== undefined) {
+    produit.description = req.body.description;
+  }
+
+  if (req.body.prix !== undefined) {
+    produit.prix = req.body.prix;
+  }
+
+  if (req.body.categorie !== undefined) {
+    produit.categorie = req.body.categorie;
+  }
+
+  res.status(200).json(produit);
+});
+
+
+// ==============================
+// 5. REMPLACER UN PRODUIT
+// PUT /products/:id
+// ==============================
+
+app.put("/products/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+
+  if (id < 0 || id >= Products.length) {
+    return res.status(404).json({
+      message: "Produit introuvable"
+    });
+  }
+
+  const { nom, description, prix, categorie } = req.body;
+
+  if (!nom || !description || prix === undefined || !categorie) {
+    return res.status(400).json({
+      message: "Tous les champs sont obligatoires"
+    });
+  }
+
+  Products[id] = {
+    nom,
+    description,
+    prix,
+    categorie
+  };
+
+  res.status(200).json(Products[id]);
+});
+
+
+// ==============================
+// 6. SUPPRIMER UN PRODUIT
+// DELETE /products/:id
+// ==============================
+
+app.delete("/products/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+
+  if (id < 0 || id >= Products.length) {
+    return res.status(404).json({
+      message: "Produit introuvable"
+    });
+  }
+
+  const produitSupprime = Products.splice(id, 1);
+
+  res.status(200).json({
+    message: "Produit supprimé",
+    produit: produitSupprime[0]
+  });
+});
+
+
+// ==============================
+// LANCEMENT DU SERVEUR
+// ==============================
+
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });
