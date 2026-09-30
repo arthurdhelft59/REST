@@ -2,7 +2,9 @@ import express from "express";
 
 
 const app= express();
+// Importation du module crypto pour le hachage des mots de passe
 const port = 3000;
+// Définition de la liste des produits
 const Products = [
   {
     nom: "Ordinateur portable",
@@ -65,12 +67,72 @@ const Products = [
     categorie: "Accessoires"
   }
 ];
+//======================================================
+// Définition de la liste des comptes utilisateurs
+// Chaque compte contient un nom d'utilisateur, un mot de passe, un token et une date d'expiration
+//======================================================
+const comptes = 
+[
+    {
+      "utilisateur": "arthur",
+      "mot_de_passe": "123456",
+      "token": "",
+      "expiration": ""
+    },
+    {
+      "utilisateur": "pablo",
+      "mot_de_passe": "AZERTY",
+      "token": "",
+      "expiration": ""
+    },
+    {
+      "utilisateur": "admin",
+      "mot_de_passe": "admin123",
+      "token": "",
+      "expiration": ""
+    }
+  ]
+
 // midleware pour parser le corps des requêtes en JSON
 // https://expressjs.com/en/4x/api.html#express.json
 
 app.use(express.json());
 
+// ==============================
+// AUTHENTIFICATION
+// ==============================
 
+// Connexion
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+
+  const account = comptes.find(
+    user => user.utilisateur === username && user.mot_de_passe === password
+  );
+
+  if (!account) {
+    return res.status(401).json({
+      message: "Nom d'utilisateur ou mot de passe incorrect"
+    });
+  }
+
+  // Génération d'un token aléatoire
+  const Token = crypto.randomBytes(32).toString("hex");
+
+  // Date d'expiration : maintenant + 5 minutes
+  const expiration = Date.now() + 5 * 60 * 1000;
+
+  // Stockage du token et de son expiration
+  account.token = Token;
+  account.expiration = Expiration;
+
+  res.status(200).json({
+    message: "Connexion réussie",
+    username: account.utilisateur,
+    token: token,
+    expiresAt: new Date(expiration)
+  });
+});
 
 // ==============================
 // 1. LISTER LES PRODUITS
