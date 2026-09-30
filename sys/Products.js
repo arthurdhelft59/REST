@@ -65,6 +65,9 @@ const Products = [
     categorie: "Accessoires"
   }
 ];
+// midleware pour parser le corps des requêtes en JSON
+// https://expressjs.com/en/4x/api.html#express.json
+
 app.use(express.json());
 
 
@@ -101,7 +104,11 @@ app.get("/products/:id", (req, res) => {
 // 3. AJOUTER UN PRODUIT
 // POST /products
 // ==============================
-
+// Ajouter un nouveau produit à la liste
+// Vérification des champs obligatoires
+// Ajout du produit à la liste
+// Réponse avec le produit ajouté
+//== ==============================
 app.post("/products", (req, res) => {
   const { nom, description, prix, categorie } = req.body;
 
@@ -128,7 +135,11 @@ app.post("/products", (req, res) => {
 // 4. MODIFIER UN PRODUIT
 // PATCH /products/:id
 // ==============================
-
+/**
+ * Permet de modifier un produit existant en utilisant la méthode PATCH.
+ * Les champs à modifier sont passés dans le corps de la requête.
+ * Si un champ n'est pas fourni, il ne sera pas modifié.
+ */
 app.patch("/products/:id", (req, res) => {
   const id = parseInt(req.params.id);
 
@@ -164,7 +175,12 @@ app.patch("/products/:id", (req, res) => {
 // 5. REMPLACER UN PRODUIT
 // PUT /products/:id
 // ==============================
+/** 
+ * Permet de remplacer un produit existant en utilisant la méthode PUT.
+ * Tous les champs du produit doivent être fournis dans le corps de la requête.
+ * Si un champ est manquant, une erreur 400 sera renvoyée.
 
+ */
 app.put("/products/:id", (req, res) => {
   const id = parseInt(req.params.id);
 
@@ -197,18 +213,23 @@ app.put("/products/:id", (req, res) => {
 // 6. SUPPRIMER UN PRODUIT
 // DELETE /products/:id
 // ==============================
+/**
+ * Permet de supprimer un produit existant en utilisant la méthode DELETE.
+ * L'ID du produit à supprimer est passé dans l'URL.
+ * Si le produit n'existe pas, une erreur 404 sera renvoyée.
+ */
 
 app.delete("/products/:id", (req, res) => {
   const id = parseInt(req.params.id);
-
-  if (id < 0 || id >= Products.length) {
+// Vérification de l'ID du produit à supprimer  
+  if (id < 0 || id >= Products.length) {  
     return res.status(404).json({
       message: "Produit introuvable"
     });
   }
-
+  // Suppression du produit de la liste
   const produitSupprime = Products.splice(id, 1);
-
+// Réponse avec le produit supprimé
   res.status(200).json({
     message: "Produit supprimé",
     produit: produitSupprime[0]
@@ -219,7 +240,14 @@ app.delete("/products/:id", (req, res) => {
 // ==============================
 // LANCEMENT DU SERVEUR
 // ==============================
-
+// Démarrage du serveur sur le port spécifié 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
+/**
+ * var : portée globale ou fonction (ne plus utilisée)
+ *  let : portée bloc (si const fait planter le code, utiliser let)
+ *  const : portée bloc et valeur constante (a utilser par defaut)
+ * 
+ */
